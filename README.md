@@ -206,4 +206,4 @@ If you have any questions or need help:
 
 ---
 
-Made with 💜 and a lot of ✨ by developers for developers
+Made with 💜 and a lot of ✨ by Siddu Kutchula

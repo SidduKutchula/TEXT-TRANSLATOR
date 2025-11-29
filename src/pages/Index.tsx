@@ -53,16 +53,16 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[hsl(330,60%,97%)] via-[hsl(270,60%,95%)] to-[hsl(200,60%,95%)]">
+    <div className="min-h-screen bg-gradient-to-br from-[hsla(239,85%,87%,1)] via-[#d0cff4] to-[hsl(200,60%,95%)]">
       {/* Hero Section */}
       <header className="relative overflow-hidden pt-20 pb-32">
-        <div className="absolute inset-0 bg-gradient-hero opacity-50"></div>
+        <div className="absolute inset-0 bg-gradient-hero opacity-70"></div>
         <div className="container mx-auto px-4 relative z-10">
           <div className="text-center max-w-4xl mx-auto">
             <div className="inline-block animate-float mb-6">
-              <Sparkles className="w-16 h-16 text-primary mx-auto" strokeWidth={1.5} />
+              <Sparkles className="w-16 h-16 text-primary mx-auto" strokeWidth={3.5} />
             </div>
-            <h1 className="text-6xl md:text-7xl font-bold mb-6 bg-gradient-to-r from-primary via-accent to-secondary bg-clip-text text-transparent animate-scale-in">
+            <h1 className="text-6xl md:text-7xl font-bold mb-6 bg-gradient-to-r from-primary via-accent to-secondary bg-clip-text animate-scale-in">
               Text Translator Magic
             </h1>
             <p className="text-xl md:text-2xl text-muted-foreground mb-4 animate-scale-in">
@@ -88,7 +88,7 @@ const Index = () => {
       <main className="container mx-auto px-4 -mt-16 relative z-20 pb-20">
         <div className="max-w-4xl mx-auto">
           {/* Translator Card */}
-          <div className="bg-white/70 backdrop-blur-xl rounded-3xl shadow-float border border-glass-border p-8 md:p-12 animate-scale-in">
+          <div className="bg-white/50 backdrop-blur-xl rounded-3xl shadow-float border border-glass-border p-8 md:p-12 animate-scale-in">
             {/* Input Section */}
             <div className="mb-8">
               <label className="block text-sm font-semibold text-foreground mb-3 flex items-center gap-2">
@@ -196,7 +196,7 @@ const Index = () => {
               ].map((item, index) => (
                 <div
                   key={index}
-                  className="bg-white/70 backdrop-blur-xl rounded-3xl p-8 shadow-soft border border-glass-border
+                  className="bg-white/50 backdrop-blur-xl rounded-3xl p-8 shadow-soft border border-glass-border
                            hover:shadow-glow transition-all duration-300 hover:-translate-y-2 animate-scale-in"
                   style={{ animationDelay: `${index * 0.1}s` }}
                 >
@@ -209,13 +209,13 @@ const Index = () => {
             </div>
           </div>
 
-          {/* Tech Magic Section */}
+          {/*Tech Magic Section*/}
           <div className="mt-20">
             <h2 className="text-4xl font-bold text-center mb-12 text-foreground">
               Tech Magic Behind the Scenes 🔮
             </h2>
             <div className="grid md:grid-cols-2 gap-8">
-              <div className="bg-white/70 backdrop-blur-xl rounded-3xl p-8 shadow-soft border border-glass-border animate-scale-in">
+              <div className="bg-white/50 backdrop-blur-xl rounded-3xl p-8 shadow-soft border border-glass-border animate-scale-in">
                 <Code className="w-12 h-12 text-primary mb-4" />
                 <h3 className="text-2xl font-bold text-foreground mb-4">Modern Frontend</h3>
                 <ul className="space-y-2 text-muted-foreground">
@@ -238,7 +238,7 @@ const Index = () => {
                 </ul>
               </div>
 
-              <div className="bg-white/70 backdrop-blur-xl rounded-3xl p-8 shadow-soft border border-glass-border animate-scale-in">
+              <div className="bg-white/50 backdrop-blur-xl rounded-3xl p-8 shadow-soft border border-glass-border animate-scale-in">
                 <Server className="w-12 h-12 text-secondary mb-4" />
                 <h3 className="text-2xl font-bold text-foreground mb-4">Secure Backend</h3>
                 <ul className="space-y-2 text-muted-foreground">
@@ -276,7 +276,7 @@ const Index = () => {
             Built with React, TypeScript, and a lot of ✨
           </p>
           <p className="text-xs text-muted-foreground mt-2">
-            © 2025 • Made with 💜 by developers for developers
+            © 2025 • Made with 💜 by Siddu Kutchula
           </p>
         </div>
       </footer>

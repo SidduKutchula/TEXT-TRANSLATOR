@@ -1,3 +1,4 @@
+// server/index.js
 const express = require('express');
 const cors = require('cors');
 const fetch = require('node-fetch');
@@ -10,80 +11,80 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 
-// Health check endpoint
+// Health check
 app.get('/api/health', (req, res) => {
-  res.json({ status: 'ok', message: 'Translation server is running' });
+  res.json({ status: 'ok', message: 'server running' });
 });
 
-// Translation endpoint
+// TRANSLATE ROUTE (uses the HTML translator endpoint from your RapidAPI curl)
 app.post('/api/translate', async (req, res) => {
   try {
     const { q, target } = req.body;
 
-    // Validate input
     if (!q || !target) {
-      return res.status(400).json({ 
-        error: 'Missing required fields: q (text) and target (language code)' 
-      });
+      return res.status(400).json({ error: "Missing required fields: q and target" });
     }
 
-    // Check for API credentials
     if (!process.env.RAPIDAPI_KEY || !process.env.RAPIDAPI_HOST) {
-      return res.status(500).json({ 
-        error: 'Server configuration error: Missing API credentials' 
-      });
+      return res.status(500).json({ error: "Missing RapidAPI credentials" });
     }
 
-    // Make request to RapidAPI
-    const response = await fetch(
-      'https://google-translate1.p.rapidapi.com/language/translate/v2',
-      {
-        method: 'POST',
-        headers: {
-          'content-type': 'application/x-www-form-urlencoded',
-          'Accept-Encoding': 'application/gzip',
-          'X-RapidAPI-Key': process.env.RAPIDAPI_KEY,
-          'X-RapidAPI-Host': process.env.RAPIDAPI_HOST,
-        },
-        body: new URLSearchParams({
-          q: q,
-          target: target,
-          source: 'en',
-        }),
-      }
-    );
+    // ---- IMPORTANT: correct full endpoint from your RapidAPI curl ----
+    const url = "https://google-translate113.p.rapidapi.com/api/v1/translator/html";
 
-    if (!response.ok) {
-      throw new Error(`RapidAPI request failed with status ${response.status}`);
-    }
+    // RapidAPI expects JSON body: { from: "en", to: "vi", html: "<...>" }
+    const payload = {
+      from: "en",    // source language
+      to: target,    // target language code passed from frontend
+      html: q        // the text/html you want translated
+    };
 
-    const data = await response.json();
-
-    // Extract translated text
-    const translatedText = data.data?.translations?.[0]?.translatedText;
-
-    if (!translatedText) {
-      throw new Error('No translation found in response');
-    }
-
-    res.json({ 
-      success: true,
-      translatedText: translatedText,
-      targetLanguage: target,
+    const rapidResp = await fetch(url, {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        "X-RapidAPI-Key": process.env.RAPIDAPI_KEY,
+        "X-RapidAPI-Host": process.env.RAPIDAPI_HOST
+      },
+      body: JSON.stringify(payload)
     });
 
+    const rawText = await rapidResp.text();
+    console.log("RapidAPI status:", rapidResp.status);
+    console.log("RapidAPI body:", rawText);
+
+    // Parse JSON safely
+    let parsed;
+    try {
+      parsed = JSON.parse(rawText);
+    } catch (err) {
+      return res.status(500).json({ error: "Invalid RapidAPI response", body: rawText });
+    }
+
+    // The provider returns an object under `trans` (from your sample).
+    // Prefer trans.title, else trans.short_text, else stringify trans.
+    let translatedText = null;
+    if (parsed?.data?.translations?.[0]?.translatedText) {
+      translatedText = parsed.data.translations[0].translatedText;
+    } else if (parsed?.trans) {
+      if (typeof parsed.trans === "string") translatedText = parsed.trans;
+      else translatedText = parsed.trans.title || parsed.trans.short_text || JSON.stringify(parsed.trans);
+    }
+
+    // If we have a translation, return it. Otherwise return raw for debugging.
+    if (translatedText) {
+      return res.status(200).json({ success: true, translatedText });
+    } else {
+      return res.status(200).json({ success: true, raw: parsed });
+    }
   } catch (error) {
-    console.error('Translation error:', error.message);
-    res.status(500).json({ 
-      error: 'Translation failed',
-      message: error.message,
-    });
+    console.error("Translation error:", error && error.stack ? error.stack : error);
+    res.status(500).json({ error: "Translation failed", message: error.message });
   }
 });
 
-// Start server
+// START SERVER
 app.listen(PORT, () => {
   console.log(`✨ Translation server running on http://localhost:${PORT}`);
   console.log(`📡 API endpoint: http://localhost:${PORT}/api/translate`);
-  console.log(`🏥 Health check: http://localhost:${PORT}/api/health`);
 });
