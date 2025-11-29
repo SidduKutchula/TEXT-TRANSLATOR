@@ -17,6 +17,10 @@ const Index = () => {
     { code: "te", name: "Telugu", flag: "🇮🇳" },
   ];
 
+  // Use Vite env variable for API base (must start with VITE_)
+  // Fallback to your deployed Render URL if env is not set
+  const API_BASE = (import.meta.env.VITE_API_URL as string) ?? "https://text-translator-1.onrender.com";
+
   const handleTranslate = async () => {
     if (!inputText.trim()) {
       setError("Please enter some text to translate");
@@ -28,7 +32,7 @@ const Index = () => {
     setTranslatedText("");
 
     try {
-      const response = await fetch("http://localhost:3000/api/translate", {
+      const response = await fetch(`${API_BASE}/api/translate`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -39,14 +43,33 @@ const Index = () => {
         }),
       });
 
-      if (!response.ok) {
-        throw new Error("Translation failed");
+      // parse JSON safely
+      let data: any;
+      try {
+        data = await response.json();
+      } catch (e) {
+        throw new Error("Invalid response from server");
       }
 
-      const data = await response.json();
-      setTranslatedText(data.translatedText);
-    } catch (err) {
-      setError("Failed to translate. Make sure the backend server is running on port 3000.");
+      if (!response.ok) {
+        // server returned an error status
+        const serverMsg = data?.message || data?.error || JSON.stringify(data);
+        throw new Error(`Server error: ${serverMsg}`);
+      }
+
+      // prefer translatedText, otherwise use raw (stringify) or fallback
+      const result =
+        data?.translatedText ??
+        (data?.raw ? (typeof data.raw === "string" ? data.raw : JSON.stringify(data.raw)) : null);
+
+      if (!result) {
+        throw new Error("No translation found in server response");
+      }
+
+      setTranslatedText(result);
+    } catch (err: any) {
+      console.error("Translate failed:", err);
+      setError(err.message || "Failed to translate. Check console for details.");
     } finally {
       setLoading(false);
     }
