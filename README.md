@@ -1,8 +1,7 @@
 # ✨ Text Translator Magic
 
 A beautiful, modern text translation web app with a dreamy pastel UI. Translate text from English to multiple languages with a sprinkle of magic!
-
-![Text Translator Magic](https://via.placeholder.com/1200x600/E6D5F5/7C3AED?text=Text+Translator+Magic)
+**Website Link** - https://text-translator-five.vercel.app/
 
 ## 🌟 Features
 
